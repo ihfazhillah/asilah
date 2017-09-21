@@ -3,9 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "apollo": "^0.2.2",
+    "bulma": "^0.5.3",
     "react": "^15.6.1",
+    "react-apollo": "^1.4.15",
     "react-dom": "^15.6.1",
-    "react-scripts": "1.0.13"
+    "react-redux": "^5.0.6",
+    "react-router": "^4.2.0",
+    "react-scripts": "1.0.13",
+    "redux": "^3.7.2"
   },
   "scripts": {
     "start": "react-scripts start",
