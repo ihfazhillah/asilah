@@ -1,28 +1,30 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import './App.css';
 import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
+import {Link} from 'react-router-dom';
 
 const ItemList = (props) => (
   <div>
     <div className="api">
-      <div className="label">{props.title}</div>
-      <div className="amount has-text-centered">{props.content}</div>
+      <div className="label"><Link to={"/question/" + props.slug}>{props.title}</Link></div>
+      <div className="has-text-weight-light">{props.content}</div>
     </div>
     <hr/>
   </div>
 )
 
-class App extends Component {
+class Home extends Component {
   render() {
     return (
       <div className="section">
         <div className="status-list">
-          {this.props.posts.map(post => (
+          {this.props.posts.map((post, index) => (
             <ItemList
               title={post.title}
               content={post.content}
+              slug={post.slug}
+              key={index}
             />
           ))}
         </div>
@@ -30,18 +32,13 @@ class App extends Component {
     );
   }
 }
-App = graphql(gql`
+Home = graphql(gql`
 query{
   allPosts{
+    slug
     content
     title
     createdAt
-    questions{
-      id
-      choices
-      question
-      answer
-    }
   }
 }
 `, {
@@ -61,5 +58,5 @@ query{
       }
     }
   }
-})(App)
-export default App;
+})(Home)
+export default Home;
