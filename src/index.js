@@ -7,7 +7,7 @@ import registerServiceWorker from './registerServiceWorker';
 import client from './apollo';
 import {ApolloProvider} from 'react-apollo'
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Route,
 } from 'react-router-dom'
 import createBrowserHistory from 'history/createBrowserHistory';
@@ -16,7 +16,7 @@ let history = createBrowserHistory()
 
 const Main = () => (
   <ApolloProvider client={client}>
-    <Router history={history}>
+    <Router >
       <div>
         <Route exact path="/" component={Home}/>
         <Route path="/question/:slug" component={SingleQuestion}/>
