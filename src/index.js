@@ -10,12 +10,20 @@ import {
   HashRouter as Router,
   Route,
 } from 'react-router-dom'
-import createBrowserHistory from 'history/createBrowserHistory';
 
-let history = createBrowserHistory()
+import {createStore, combineReducers} from 'redux';
+import {reducer as formReducer} from 'redux-form'
+
+import 'sweetalert2/dist/sweetalert2.min.css';
+const reducers = combineReducers({
+  form: formReducer
+})
+
+const store = createStore(reducers)
+
 
 const Main = () => (
-  <ApolloProvider client={client}>
+  <ApolloProvider client={client} store={store}>
     <Router >
       <div>
         <Route exact path="/" component={Home}/>

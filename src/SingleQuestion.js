@@ -2,6 +2,8 @@ import React from 'react'
 import {graphql, gql} from 'react-apollo'
 import _ from 'lodash';
 import './statuspage.css'
+import {Field, reduxForm} from 'redux-form'
+import swal from 'sweetalert2';
 
 const ChoicesRadioTemplate = ({choices, questionId}) => (
   <div>
@@ -9,7 +11,7 @@ const ChoicesRadioTemplate = ({choices, questionId}) => (
       _.map(choices, (choice, index) => (
         <div className="control" key={index} style={{color: 'black'}}>
         <label className="radio">
-          <input type="radio" name={questionId}/> {choice.answer}
+          <Field component='input' type="radio" name={questionId} value={choice.id.toString()}/> {choice.answer}
         </label>
       </div>
       ))
@@ -18,11 +20,12 @@ const ChoicesRadioTemplate = ({choices, questionId}) => (
 )
 const ChoicesCheckboxTemplate = ({choices, questionId}) => (
   <div>
+
     {
       _.map(choices, (choice, index) => (
         <div className="control" key={index} style={{color: 'black'}}>
-        <label className="radio">
-          <input type="checkbox" name={questionId}/> {choice.answer}
+        <label className="checkbox">
+          <Field component='input' type="checkbox" name={questionId + "." + choice.id}/> {choice.answer}
         </label>
       </div>
       ))
@@ -30,14 +33,14 @@ const ChoicesCheckboxTemplate = ({choices, questionId}) => (
   </div>
 )
 
-const QuestionsTemplate = ({questions}) => (
+const QuestionsTemplate = ({questions, result, onSubmit, handleSubmit}) => (
 <article className="tile is-child notification is-info">
-  <form>
+  <form onSubmit={handleSubmit(onSubmit)}>
         <p className="title">Soal</p>
 
         {
           _.map(questions, (q, i) => (
-            <div className="box" key={i}>
+            <div style={{backgroundColor: result[q.node.id] || result[q.node.id] === undefined ? "" : "#ff3860"}} className="box" key={i}>
               <strong>{i+1}. {q.node.question}</strong>
               <br/>
               <br/>
@@ -59,22 +62,85 @@ const QuestionsTemplate = ({questions}) => (
       </article>
 )
 
-let SingleQuestion = ({match, post}) => (
-  <div className="tile is-ancestor">
-    <div className="tile is-parent  column is-4">
-      <article className="tile is-child notification is-primary">
-        <p className="title">{post.title}</p>
-        <p>{post.content}</p>
-      </article>
-    </div>
-    <div className="tile is-parent column is-8">
-        <QuestionsTemplate
-          questions={post.questions && post.questions.edges}
-        />
+class SingleQuestion extends React.Component{
+  constructor(props) {
+    super(props)
 
-    </div>
-  </div>
-)
+    this.state = {
+      result : {},
+    }
+
+    this.ayoKoreksi = this.ayoKoreksi.bind(this)
+  }
+
+  ayoKoreksi(value){
+    let questions = this.props.post.questions
+
+    let answers = {}
+    _.forEach(questions.edges, item => {
+      answers[item.node.id] = item.node.answer
+    });
+
+    let userAnswers = {}
+    _.forIn(value, (val, key) => {
+      if(_.isString(val)){
+        userAnswers[key] = [val];
+      } else{
+        userAnswers[key] = _.keys(val)
+      }
+    })
+
+    let result = _.mapValues(answers, (val, key) => {
+      return _.isEqual(_.sortBy(answers[key], v=>v), _.sortBy(userAnswers[key], v => v))
+    })
+
+    this.setState({result: result})
+
+    let correctCount = _.size(_.filter(result, (v) => v))
+    let questionsCount = _.size(questions.edges)
+    let score = 100/questionsCount*correctCount
+
+    swal({
+      title: "Score Pertanyaan",
+      html: `Jumlah Pertanyaan: ${questionsCount}<br>
+      Jumlah Benar: ${correctCount}<br>
+      Score: ${score}
+      `,
+      type: score > 50 ? "success" : "error",
+    })
+
+  }
+
+  render(){
+    let {
+      post,
+      handleSubmit
+    } = this.props
+    return (
+      <div className="tile is-ancestor">
+        <div className="tile is-parent  column is-4">
+          <article className="tile is-child notification is-primary">
+            <p className="title">{post.title}</p>
+            <p>{post.content}</p>
+          </article>
+        </div>
+        <div className="tile is-parent column is-8">
+            <QuestionsTemplate
+              questions={post.questions && post.questions.edges}
+              handleSubmit={handleSubmit}
+              onSubmit={this.ayoKoreksi}
+              result={this.state.result}
+            />
+
+        </div>
+      </div>
+    )
+  }
+}
+
+SingleQuestion = reduxForm({
+  form: 'question'
+})(SingleQuestion)
 
 let query = gql`
 query ($slug: String!){
@@ -114,7 +180,6 @@ SingleQuestion = graphql(query, {
     if (!data.loading) {
       let post = _.first(data.viewer.allPosts.edges);
       post = post.node
-      debugger
 
       return {
         post,
