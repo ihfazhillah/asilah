@@ -4,6 +4,7 @@ import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import {Link} from 'react-router-dom';
 import './statuspage.css'
+import _ from 'lodash';
 
 const ItemList = (props) => (
   <div>
@@ -35,17 +36,25 @@ class Home extends Component {
 }
 Home = graphql(gql`
 query{
-  allPosts{
+viewer{
+  allPosts (where: {type: {eq: "question"}}){
+    edges
+    {
+    node
+  {
     slug
     content
     title
     createdAt
   }
 }
+}
+}
+}
 `, {
   props: ({ownProps, data}) => {
     if (!data.loading) {
-      let posts = data.allPosts
+      let posts = _.map(data.viewer.allPosts.edges, item => item.node)
       let postLoading = data.loading
 
       return {

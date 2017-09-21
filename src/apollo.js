@@ -1,7 +1,7 @@
 import {ApolloClient, createNetworkInterface} from 'react-apollo';
 
 const networkInterface = createNetworkInterface({
-  uri: "https://api.graph.cool/simple/v1/cj7tygll5172t0109ayx3zwdz"
+  uri: "https://us-west-2.api.scaphold.io/graphql/asilah"
 })
 
 const client = new ApolloClient({

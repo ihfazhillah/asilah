@@ -3,6 +3,59 @@ import {graphql, gql} from 'react-apollo'
 import _ from 'lodash';
 import './statuspage.css'
 
+const ChoicesRadioTemplate = ({choices, questionId}) => (
+  <div>
+    {
+      _.map(choices, (choice, index) => (
+        <div className="control" key={index} style={{color: 'black'}}>
+        <label className="radio">
+          <input type="radio" name={questionId}/> {choice.answer}
+        </label>
+      </div>
+      ))
+    }
+  </div>
+)
+const ChoicesCheckboxTemplate = ({choices, questionId}) => (
+  <div>
+    {
+      _.map(choices, (choice, index) => (
+        <div className="control" key={index} style={{color: 'black'}}>
+        <label className="radio">
+          <input type="checkbox" name={questionId}/> {choice.answer}
+        </label>
+      </div>
+      ))
+    }
+  </div>
+)
+
+const QuestionsTemplate = ({questions}) => (
+<article className="tile is-child notification is-info">
+        <p className="title">Soal</p>
+
+        {
+          _.map(questions, (q, i) => (
+            <div className="box" key={i}>
+              <strong>{i+1}. {q.node.question}</strong>
+              <br/>
+              <br/>
+              {q.node.type === 'one' ?
+              <ChoicesRadioTemplate 
+                choices={q.node.choices}
+                questionId={q.node.id}
+              />:
+                  <ChoicesCheckboxTemplate
+                    choices={q.node.choices}
+                    questionId={q.node.id}
+                  />
+              }
+            </div>
+          ))
+        }
+      </article>
+)
+
 let SingleQuestion = ({match, post}) => (
   <div className="tile is-ancestor">
     <div className="tile is-parent  column is-4">
@@ -12,46 +65,38 @@ let SingleQuestion = ({match, post}) => (
       </article>
     </div>
     <div className="tile is-parent column is-8">
-      <article className="tile is-child notification is-info">
-        <p className="title">Soal</p>
-
-        {
-          _.map(post.questions, (q, i) => (
-            <div className="box">
-              <strong>{i+1}. {q.question}</strong>
-              <br/>
-              <br/>
-              {
-                _.map(q.choices, (c, j) => (
-                  <div className="control" key={j} style={{color: 'black'}}>
-                  <label className="radio">
-                    <input type="radio" name={q.id}/> {c.answer}
-                  </label>
-                </div>
-                ))
-              }
-            </div>
-          ))
-        }
-      </article>
+      <QuestionsTemplate
+        questions={post.questions && post.questions.edges}
+      />
     </div>
   </div>
 )
 
 let query = gql`
 query ($slug: String!){
-  allPosts(filter: {slug: $slug}){
-    title
-    content
-    id
-    createdAt
-    questions{
-      id
-      question
-      choices
-      answer
+  viewer{
+  allPosts(where: {slug: {eq: $slug}}){
+    edges{
+      node{
+        id
+        title
+        content
+        type
+        questions{
+          edges{
+            node{
+              id
+              question
+              choices
+              type
+              answer
+            }
+          }
+        }
+      }
     }
-  }
+    
+  }}
 }
 `
 
@@ -63,7 +108,9 @@ SingleQuestion = graphql(query, {
   }),
   props: ({ownProps, data}) => {
     if (!data.loading) {
-      let post = _.first(data.allPosts);
+      let post = _.first(data.viewer.allPosts.edges);
+      post = post.node
+      debugger
 
       return {
         post,
