@@ -32,6 +32,7 @@ const ChoicesCheckboxTemplate = ({choices, questionId}) => (
 
 const QuestionsTemplate = ({questions}) => (
 <article className="tile is-child notification is-info">
+  <form>
         <p className="title">Soal</p>
 
         {
@@ -53,6 +54,8 @@ const QuestionsTemplate = ({questions}) => (
             </div>
           ))
         }
+        <button className="button">Submit</button>
+      </form>
       </article>
 )
 
@@ -65,9 +68,10 @@ let SingleQuestion = ({match, post}) => (
       </article>
     </div>
     <div className="tile is-parent column is-8">
-      <QuestionsTemplate
-        questions={post.questions && post.questions.edges}
-      />
+        <QuestionsTemplate
+          questions={post.questions && post.questions.edges}
+        />
+
     </div>
   </div>
 )
