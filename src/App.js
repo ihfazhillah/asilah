@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import {Link} from 'react-router-dom';
-import './statuspage.css'
 import _ from 'lodash';
+import Halogen from 'halogen'
 
 const ItemList = (props) => (
   <div>
@@ -20,6 +19,9 @@ class Home extends Component {
   render() {
     return (
       <div className="section">
+        {this.props.postLoading?
+            <Halogen.BeatLoader color="#1fc8db"/>
+            :
         <div className="status-list">
           {this.props.posts.map((post, index) => (
             <ItemList
@@ -30,6 +32,7 @@ class Home extends Component {
             />
           ))}
         </div>
+        }
       </div>
     );
   }

@@ -1,9 +1,9 @@
 import React from 'react'
 import {graphql, gql} from 'react-apollo'
 import _ from 'lodash';
-import './statuspage.css'
 import {Field, reduxForm} from 'redux-form'
 import swal from 'sweetalert2';
+import Halogen from 'halogen'
 
 const ChoicesRadioTemplate = ({choices, questionId}) => (
   <div>
@@ -33,31 +33,37 @@ const ChoicesCheckboxTemplate = ({choices, questionId}) => (
   </div>
 )
 
-const QuestionsTemplate = ({questions, result, onSubmit, handleSubmit}) => (
+const QuestionsTemplate = ({questions, postLoading, result, onSubmit, handleSubmit}) => (
 <article className="tile is-child notification is-info">
   <form onSubmit={handleSubmit(onSubmit)}>
         <p className="title">Soal</p>
-
-        {
-          _.map(questions, (q, i) => (
-            <div style={{backgroundColor: result[q.node.id] || result[q.node.id] === undefined ? "" : "#ff3860"}} className="box" key={i}>
-              <strong>{i+1}. {q.node.question}</strong>
-              <br/>
-              <br/>
-              {q.node.type === 'one' ?
-              <ChoicesRadioTemplate 
-                choices={q.node.choices}
-                questionId={q.node.id}
-              />:
-                  <ChoicesCheckboxTemplate
-                    choices={q.node.choices}
-                    questionId={q.node.id}
-                  />
+        {postLoading?
+            <Halogen.BeatLoader/>
+            :
+            <div>
+              {
+                _.map(questions, (q, i) => (
+                  <div style={{backgroundColor: result[q.node.id] || result[q.node.id] === undefined ? "" : "#ff3860"}} className="box" key={i}>
+                    <strong>{i+1}. {q.node.question}</strong>
+                    <br/>
+                    <br/>
+                    {q.node.type === 'one' ?
+                    <ChoicesRadioTemplate 
+                      choices={q.node.choices}
+                      questionId={q.node.id}
+                    />:
+                        <ChoicesCheckboxTemplate
+                          choices={q.node.choices}
+                          questionId={q.node.id}
+                        />
+                    }
+                  </div>
+                ))
               }
+              <button className="button">Submit</button>
             </div>
-          ))
         }
-        <button className="button">Submit</button>
+
       </form>
       </article>
 )
@@ -114,14 +120,22 @@ class SingleQuestion extends React.Component{
   render(){
     let {
       post,
-      handleSubmit
+      handleSubmit,
+      postLoading
     } = this.props
     return (
+      <div className="section">
       <div className="tile is-ancestor">
         <div className="tile is-parent  column is-4">
           <article className="tile is-child notification is-primary">
-            <p className="title">{post.title}</p>
-            <p>{post.content}</p>
+            {postLoading?
+                <Halogen.BeatLoader/>
+                :
+                <div>
+                  <p className="title">{post.title}</p>
+                  <p>{post.content}</p>
+                </div>
+              }
           </article>
         </div>
         <div className="tile is-parent column is-8">
@@ -130,9 +144,11 @@ class SingleQuestion extends React.Component{
               handleSubmit={handleSubmit}
               onSubmit={this.ayoKoreksi}
               result={this.state.result}
+              postLoading={postLoading}
             />
 
         </div>
+      </div>
       </div>
     )
   }
