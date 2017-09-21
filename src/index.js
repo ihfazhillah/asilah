@@ -9,18 +9,18 @@ import {ApolloProvider} from 'react-apollo'
 import {
   BrowserRouter as Router,
   Route,
-  Switch
 } from 'react-router-dom'
+import createBrowserHistory from 'history/createBrowserHistory';
+
+let history = createBrowserHistory()
 
 const Main = () => (
   <ApolloProvider client={client}>
-    <Router>
-      <Switch>
-        <div>
-          <Route exact path="/" component={Home}/>
-          <Route path="/question/:slug" component={SingleQuestion}/>
-        </div>
-      </Switch>
+    <Router history={history}>
+      <div>
+        <Route exact path="/" component={Home}/>
+        <Route path="/question/:slug" component={SingleQuestion}/>
+      </div>
     </Router>
   </ApolloProvider>
 )
