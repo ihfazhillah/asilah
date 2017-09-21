@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import {Link} from 'react-router-dom';
+import './statuspage.css'
 
 const ItemList = (props) => (
   <div>
