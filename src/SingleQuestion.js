@@ -4,6 +4,7 @@ import _ from 'lodash';
 import {Field, reduxForm} from 'redux-form'
 import swal from 'sweetalert2';
 import Halogen from 'halogen'
+import DocumentTitle from 'react-document-title';
 
 const ChoicesRadioTemplate = ({choices, questionId}) => (
   <div>
@@ -124,6 +125,7 @@ class SingleQuestion extends React.Component{
       postLoading
     } = this.props
     return (
+      <DocumentTitle title={(!postLoading && post.title) || "Untitled"}>
       <div className="section">
       <div className="tile is-ancestor">
         <div className="tile is-parent  column is-4">
@@ -150,6 +152,7 @@ class SingleQuestion extends React.Component{
         </div>
       </div>
       </div>
+    </DocumentTitle>
     )
   }
 }

@@ -4,6 +4,7 @@ import gql from 'graphql-tag'
 import {Link} from 'react-router-dom';
 import _ from 'lodash';
 import Halogen from 'halogen'
+import DocumentTitle from 'react-document-title'
 
 const ItemList = (props) => (
   <div>
@@ -18,6 +19,7 @@ const ItemList = (props) => (
 class Home extends Component {
   render() {
     return (
+      <DocumentTitle title="Al Asilah - Kuis Online">
       <div className="section">
         {this.props.postLoading?
             <Halogen.BeatLoader color="#1fc8db"/>
@@ -34,6 +36,7 @@ class Home extends Component {
         </div>
         }
       </div>
+    </DocumentTitle>
     );
   }
 }
