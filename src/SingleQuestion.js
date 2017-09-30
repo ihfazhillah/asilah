@@ -34,7 +34,7 @@ const ChoicesCheckboxTemplate = ({choices, questionId}) => (
   </div>
 )
 
-const QuestionsTemplate = ({questions, postLoading, result, onSubmit, handleSubmit}) => (
+const QuestionsTemplate = ({questions, postLoading, result, onSubmit, handleSubmit, reset}) => (
 <article className="tile is-child notification is-info">
   <form onSubmit={handleSubmit(onSubmit)}>
         <p className="title">Soal</p>
@@ -62,6 +62,7 @@ const QuestionsTemplate = ({questions, postLoading, result, onSubmit, handleSubm
                 ))
               }
               <button className="button">Submit</button>
+              <button className="button is-danger is-pulled-right" onClick={(e) => {e.preventDefault();reset()}}>Reset</button>
             </div>
         }
 
@@ -122,7 +123,8 @@ class SingleQuestion extends React.Component{
     let {
       post,
       handleSubmit,
-      postLoading
+      postLoading,
+      reset
     } = this.props
     return (
       <DocumentTitle title={(!postLoading && post.title) || "Untitled"}>
@@ -147,6 +149,7 @@ class SingleQuestion extends React.Component{
               onSubmit={this.ayoKoreksi}
               result={this.state.result}
               postLoading={postLoading}
+              reset={reset}
             />
 
         </div>
