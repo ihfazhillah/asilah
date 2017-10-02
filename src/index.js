@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Home from './App';
-import SingleQuestion from './SingleQuestion';
+//import Home from './App';
+//import SingleQuestion from './SingleQuestion';
 import registerServiceWorker from './registerServiceWorker';
 import client from './apollo';
 import {ApolloProvider} from 'react-apollo'
@@ -11,6 +11,7 @@ import {
   Route,
   Link
 } from 'react-router-dom'
+import Loadable from 'react-loadable'
 
 import {createStore, combineReducers} from 'redux';
 import {reducer as formReducer} from 'redux-form'
@@ -87,6 +88,17 @@ const Header = () => (
     </nav>
 )
 
+const Home = Loadable({
+  loader: () => import('./App'),
+  loading: () => null
+})
+
+const SingleQuestion = Loadable({
+  loader: () => import('./SingleQuestion'),
+  loading: () => null
+})
+
+
 
 const Main = () => (
   <ApolloProvider client={client} store={store}>
@@ -94,7 +106,7 @@ const Main = () => (
       <div>
         <Header/>
         <Route exact path="/" component={Home}/>
-        <Route path="/question/:slug" component={SingleQuestion}/>
+      <Route path="/question/:slug" component={SingleQuestion}/>
         <Footer/>
       </div>
     </Router>
