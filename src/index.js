@@ -12,6 +12,7 @@ import {
   Link
 } from 'react-router-dom'
 import Loadable from 'react-loadable'
+import PrivateRoute from './privateRoute';
 
 import {createStore, combineReducers} from 'redux';
 import {reducer as formReducer} from 'redux-form'
@@ -98,6 +99,10 @@ const SingleQuestion = Loadable({
   loading: () => null
 })
 
+const Login = Loadable({
+  loader: () => import('./login'),
+  loading: () => null
+})
 
 
 const Main = () => (
@@ -105,8 +110,10 @@ const Main = () => (
     <Router >
       <div>
         <Header/>
+        <PrivateRoute path="/admin" component={props=> <p>Hello world</p>}/>
         <Route exact path="/" component={Home}/>
-      <Route path="/question/:slug" component={SingleQuestion}/>
+        <Route path="/question/:slug" component={SingleQuestion}/>
+        <Route path="/login" component={Login}/>
         <Footer/>
       </div>
     </Router>
